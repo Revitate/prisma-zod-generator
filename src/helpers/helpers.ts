@@ -34,7 +34,7 @@ export function addMissingInputObjectTypes(
       outputObjectTypes,
       models,
     );
-    Transformer.setIsGenerateSelect(true);
+    // Transformer.setIsGenerateSelect(true);
   }
   if (options.isGenerateSelect || options.isGenerateInclude) {
     addMissingInputObjectTypesForModelArgs(
@@ -50,7 +50,7 @@ export function addMissingInputObjectTypes(
       models,
       options.isGenerateSelect,
     );
-    Transformer.setIsGenerateInclude(true);
+    // Transformer.setIsGenerateInclude(true);
   }
 }
 
