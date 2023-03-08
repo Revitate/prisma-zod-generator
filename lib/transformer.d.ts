@@ -20,10 +20,12 @@ export default class Transformer {
     private static isCustomPrismaClientOutputPath;
     private static isGenerateSelect;
     private static isGenerateInclude;
+    private static languages;
     constructor(params: TransformerParams);
     static setOutputPath(outPath: string): void;
     static setIsGenerateSelect(isGenerateSelect: boolean): void;
     static setIsGenerateInclude(isGenerateInclude: boolean): void;
+    static setLanguages(languages: string[]): void;
     static getOutputPath(): string;
     static setPrismaClientOutputPath(prismaClientCustomPath: string): void;
     static generateIndex(): Promise<void>;

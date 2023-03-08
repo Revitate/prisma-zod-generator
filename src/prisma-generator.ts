@@ -2,7 +2,7 @@ import {
   DMMF,
   EnvValue,
   GeneratorConfig,
-  GeneratorOptions
+  GeneratorOptions,
 } from '@prisma/generator-helper';
 import { getDMMF, parseEnvValue } from '@prisma/internals';
 import { promises as fs } from 'fs';
@@ -10,7 +10,7 @@ import {
   addMissingInputObjectTypes,
   hideInputObjectTypesAndRelatedFields,
   resolveAddMissingInputObjectTypeOptions,
-  resolveModelsComments
+  resolveModelsComments,
 } from './helpers';
 import { resolveAggregateOperationSupport } from './helpers/aggregate-helpers';
 import Transformer from './transformer';
@@ -56,9 +56,11 @@ export async function generate(options: GeneratorOptions) {
     const dataSource = options.datasources?.[0];
     const previewFeatures = prismaClientGeneratorConfig?.previewFeatures;
     Transformer.provider = dataSource.provider;
-    Transformer.previewFeatures = previewFeatures
+    Transformer.previewFeatures = previewFeatures;
 
     const generatorConfigOptions = options.generator.config;
+    const languages = generatorConfigOptions.languages.split(',');
+    Transformer.setLanguages(languages);
 
     const addMissingInputObjectTypeOptions =
       resolveAddMissingInputObjectTypeOptions(generatorConfigOptions);

@@ -10,8 +10,8 @@ import {
 } from './helpers';
 import { isAggregateInputType } from './helpers/aggregate-helpers';
 import { AggregateOperationSupport, TransformerParams } from './types';
-import { writeIndexFile } from './utils/writeIndexFile';
 import { writeFileSafely } from './utils/writeFileSafely';
+import { writeIndexFile } from './utils/writeIndexFile';
 
 export default class Transformer {
   name: string;
@@ -32,6 +32,7 @@ export default class Transformer {
   private static isCustomPrismaClientOutputPath: boolean = false;
   private static isGenerateSelect: boolean = false;
   private static isGenerateInclude: boolean = false;
+  private static languages: string[] = ['en'];
 
   constructor(params: TransformerParams) {
     this.name = params.name ?? '';
@@ -54,6 +55,10 @@ export default class Transformer {
     this.isGenerateInclude = isGenerateInclude;
   }
 
+  static setLanguages(languages: string[]) {
+    this.languages = languages;
+  }
+
   static getOutputPath() {
     return this.outputPath;
   }
@@ -65,7 +70,7 @@ export default class Transformer {
   }
 
   static async generateIndex() {
-    const indexPath = path.join(Transformer.outputPath, "schemas/index.ts");
+    const indexPath = path.join(Transformer.outputPath, 'schemas/index.ts');
     await writeIndexFile(indexPath);
   }
 
@@ -149,8 +154,21 @@ export default class Transformer {
         result.push(this.wrapWithZodValidators('z.date()', field, inputType));
       } else if (inputType.type === 'Json') {
         this.hasJson = true;
-
-        result.push(this.wrapWithZodValidators('jsonSchema', field, inputType));
+        if (field.name.endsWith('Tr')) {
+          result.push(
+            this.wrapWithZodValidators(
+              `z.object({${Transformer.languages
+                .map((lang) => `${lang}: z.string()`)
+                .join(', ')}})`,
+              field,
+              inputType,
+            ),
+          );
+        } else {
+          result.push(
+            this.wrapWithZodValidators('jsonSchema', field, inputType),
+          );
+        }
       } else if (inputType.type === 'True') {
         result.push(
           this.wrapWithZodValidators('z.literal(true)', field, inputType),
@@ -185,7 +203,7 @@ export default class Transformer {
       );
     }
 
-    const fieldName = alternatives.some((alt) => alt.includes(':'))
+    const fieldName = alternatives.some((alt) => /^\s*\w+:/.test(alt))
       ? ''
       : `  ${field.name}:`;
 
@@ -199,7 +217,6 @@ export default class Transformer {
     if (field.isNullable) {
       resString += '.nullable()';
     }
-
     return [[`  ${fieldName} ${resString} `, field, true]];
   }
 

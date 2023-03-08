@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "mysql"
   url      = "file:./dev.db"
 }
 
@@ -12,6 +12,7 @@ generator zod {
   output            = "./generated"
   isGenerateSelect  = true
   isGenerateInclude = true
+  languages         = "en,th"
 }
 
 model User {
@@ -44,6 +45,7 @@ model Book {
 }
 
 model Map {
-  key   String @id
-  value String
+  key    String @id
+  nameTr Json
+  value  String
 }
